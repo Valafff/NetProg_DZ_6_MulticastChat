@@ -45,8 +45,17 @@ namespace NetProg_DZ_6_MulticastChat
 					try
 					{
 						string newClientName = _message.Replace(CONTROLMESSAGES[0], "");
+					
 						Invoke(new Action(() => listBoxClients.Items.Add(newClientName)));
-						Invoke(new Action(() => serverModul.SendMessage(CONTROLMESSAGES[2]+client.Name+ CONTROLMESSAGES[2]+newClientName)));
+
+						Invoke(new Action(() =>
+						{
+							string[] arr = new string[listBoxClients.Items.Count];
+							listBoxClients.Items.CopyTo(arr, 0);
+							string NAMES = string.Join("*#;", arr);
+							serverModul.SendMessage(CONTROLMESSAGES[2] + NAMES);
+						}));
+
 					}
 					catch (Exception ex)
 					{
@@ -69,15 +78,20 @@ namespace NetProg_DZ_6_MulticastChat
 				}
 				else if (_message.Contains(CONTROLMESSAGES[2]))
 				{
-					//Invoke(new Action(() => MessageBox.Show("!!!")));
 					Invoke(new Action(() =>
 					{
-						string[] words = _message.Split($"{CONTROLMESSAGES[2]}", StringSplitOptions.RemoveEmptyEntries);
-						//MessageBox.Show($"{words[0]}   {words[1]}");
-						if (client.Name  == words[1])
+
+						_message = _message.Replace(CONTROLMESSAGES[2], "");
+						//MessageBox.Show($"{_message}");
+						string[] words = _message.Split($"*#;", StringSplitOptions.RemoveEmptyEntries);
+
+						foreach (string word in words)
 						{
-							listBoxClients.Items.Add(words[0]);
-						}
+							if (client.Name != word && !listBoxClients.Items.Contains(word))
+							{
+								listBoxClients.Items.Add(word);
+							}
+						}	
 					}));
 
 				}
