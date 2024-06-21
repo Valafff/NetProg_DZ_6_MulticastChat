@@ -6,6 +6,7 @@ namespace NetProg_DZ_6_MulticastChat
 	public partial class ClientForm : Form
 	{
 		Random random = new Random();
+		bool flag = true;
 
 		List<string> CONTROLMESSAGES = new List<string>()
 		{
@@ -35,27 +36,57 @@ namespace NetProg_DZ_6_MulticastChat
 
 		void UpdateMessages(string _message)
 		{
-			//*#ADDME___
-			if (_message.Contains(CONTROLMESSAGES[0]))
+			if (flag)
 			{
+				//*#ADDME___
+				if (_message.Contains(CONTROLMESSAGES[0]))
+				{
+					try
+					{
+						string newClientName = _message.Replace(CONTROLMESSAGES[0], "");
+						Invoke(new Action(() => listBoxClients.Items.Add(newClientName)));
+					}
+					catch (Exception ex)
+					{
 
-				string newClientName = _message.Replace(CONTROLMESSAGES[0], "");
+						MessageBox.Show(ex.Message);
+					}
 
-				Invoke(new Action(() => listBoxClients.Items.Add(newClientName)));
 
+				}
+				//*#ClEARME___
+				else if (_message.Contains(CONTROLMESSAGES[1]))
+				{
+					try
+					{
+						Invoke(new Action(() => listBoxClients.Items.Remove(_message.Replace(CONTROLMESSAGES[1], ""))));
+					}
+					catch (Exception ex)
+					{
+
+						MessageBox.Show(ex.Message);
+					}
+				}
+				else
+				{
+					try
+					{
+						if (_message != null)
+						{
+							Invoke(new Action(() => richTextBoxMessages.AppendText(_message)));
+							Invoke(new Action(() => richTextBoxMessages.AppendText("\n")));
+							Invoke(new Action(() => richTextBoxToWrite.Clear()));
+						}
+					}
+					catch (Exception ex)
+					{
+
+						MessageBox.Show(ex.Message);
+					}
+
+				}
 			}
-			//*#ClEARME___
-			else if (_message.Contains(CONTROLMESSAGES[1]))
-			{
-				Invoke(new Action(() => listBoxClients.Items.Remove(_message.Replace(CONTROLMESSAGES[1], ""))));
-			}
-			else
-			{
-				Invoke(new Action(() => richTextBoxMessages.AppendText((_message))));
-				Invoke(new Action(() => richTextBoxMessages.AppendText("\n")));
-				Invoke(new Action(() => richTextBoxToWrite.Clear()));
-			}
-			
+
 		}
 
 		string getTimeNow()
@@ -90,6 +121,7 @@ namespace NetProg_DZ_6_MulticastChat
 
 		private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			flag = false;
 			serverModul.SendMessage(CONTROLMESSAGES[1] + client.Name);
 		}
 	}
