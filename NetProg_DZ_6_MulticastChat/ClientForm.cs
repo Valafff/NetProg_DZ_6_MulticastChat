@@ -12,6 +12,7 @@ namespace NetProg_DZ_6_MulticastChat
 		{
 			"*#ADDME___",
 			"*#ClEARME___",
+			"*#ClEARMETO___",
 		};
 
 		Client client = ConfigWriteReadJson.ReadConfig<Client>("Config.json");
@@ -45,14 +46,13 @@ namespace NetProg_DZ_6_MulticastChat
 					{
 						string newClientName = _message.Replace(CONTROLMESSAGES[0], "");
 						Invoke(new Action(() => listBoxClients.Items.Add(newClientName)));
+						Invoke(new Action(() => serverModul.SendMessage(CONTROLMESSAGES[2]+client.Name+ CONTROLMESSAGES[2]+newClientName)));
 					}
 					catch (Exception ex)
 					{
 
 						MessageBox.Show(ex.Message);
 					}
-
-
 				}
 				//*#ClEARME___
 				else if (_message.Contains(CONTROLMESSAGES[1]))
@@ -66,6 +66,20 @@ namespace NetProg_DZ_6_MulticastChat
 
 						MessageBox.Show(ex.Message);
 					}
+				}
+				else if (_message.Contains(CONTROLMESSAGES[2]))
+				{
+					//Invoke(new Action(() => MessageBox.Show("!!!")));
+					Invoke(new Action(() =>
+					{
+						string[] words = _message.Split($"{CONTROLMESSAGES[2]}", StringSplitOptions.RemoveEmptyEntries);
+						//MessageBox.Show($"{words[0]}   {words[1]}");
+						if (client.Name  == words[1])
+						{
+							listBoxClients.Items.Add(words[0]);
+						}
+					}));
+
 				}
 				else
 				{
